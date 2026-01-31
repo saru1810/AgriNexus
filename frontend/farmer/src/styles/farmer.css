@@ -1,0 +1,28 @@
+
+/* Import Tailwind base, components, and utilities */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS overrides */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Optional container class */
+.container {
+  max-width: 72rem; /* 6xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem;
+}
+
+/* Small hover effect for cards */
+.card-hover:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+
+
