@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Dashboard from "../components/Dashboard";
-import CropRegistrationForm from "../components/CropRegistrationForm";
-import CropStatusUpdateForm from "../components/CropStatusUpdateForm";
-import FailureReportForm from "../components/FailureReportForm";
-import DocGeneratorButton from "../components/DocGeneratorButton";
+import CropRegistrationForm from "../components/CropRegistrationForm.jsx";
+import CropStatusUpdateForm from "../components/CropStatusUpdateForm.jsx";
+import FailureReportForm from "../components/FailureReportForm.jsx";
+import DocGeneratorButton from "../components/DocGeneratorButton.jsx";
 
 const DashboardPage = () => {
   // Sample crops state (can later fetch from backend)
