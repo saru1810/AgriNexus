@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
-import DashboardPage from "./pages/DashboardPage.jsx";
-import CropRegistrationPage from "./pages/CropRegistrationPage.jsx";
-import CropStatusPage from "./pages/CropStatusPage.jsx";
-import FailureReportPage from "./pages/FailureReportPage.jsx";
+import DashboardPage from "./src/pages/DashboardPage.jsx";
+import CropRegistrationPage from "./src/pages/CropRegistrationPage.jsx";
+import CropStatusPage from "./src/pages/CropStatusPage.jsx";
+import FailureReportPage from "./src/pages/FailureReportPage.jsx";
 
 function App() {
   return (
