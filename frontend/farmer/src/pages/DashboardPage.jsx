@@ -54,12 +54,5 @@ const DashboardPage = () => {
 };
 
 // src/pages/DashboardPage.jsx
-export default function DashboardPage() {
-  return (
-    <div>
-      <h2 className="text-2xl font-bold">Dashboard Page</h2>
-      <p>Welcome to the Farmer Dashboard!</p>
-    </div>
-  );
-}
+export default DashboardPage; 
 

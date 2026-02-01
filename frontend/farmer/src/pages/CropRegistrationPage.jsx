@@ -35,12 +35,5 @@ const CropRegistrationPage = () => {
 };
 
 // src/pages/CropRegistrationPage.jsx
-export default function CropRegistrationPage() {
-  return (
-    <div>
-      <h2 className="text-2xl font-bold">Crop Registration Page</h2>
-      <p>Register your crops here.</p>
-    </div>
-  );
-}
+export default CropRegistrationPage; 
 

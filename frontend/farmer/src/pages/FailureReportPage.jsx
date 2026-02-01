@@ -46,12 +46,6 @@ const FailureReportPage = () => {
 };
 
 // src/pages/FailureReportPages.jsx
-export default function FailureReportPage() {
-  return (
-    <div>
-      <h2 className="text-2xl font-bold">Failure Report Page</h2>
-      <p>Report any crop failures here.</p>
-    </div>
-  );
-}
+export default FailureReportPage;
+  
 
