@@ -47,4 +47,13 @@ const CropStatusPage = () => {
   );
 };
 
-export default CropStatusPage;
+// src/pages/CropStatusPage.jsx
+export default function CropStatusPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold">Crop Status Page</h2>
+      <p>Update the status of your crops here.</p>
+    </div>
+  );
+}
+
