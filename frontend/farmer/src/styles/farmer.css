@@ -1,15 +1,17 @@
 
-/* Import Tailwind base, components, and utilities */
+/* ================= Tailwind Imports ================= */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom CSS overrides */
+/* ================= Custom Styles ================= */
+
+/* Body font */
 body {
   font-family: 'Inter', sans-serif;
 }
 
-/* Optional container class */
+/* Optional container override */
 .container {
   max-width: 72rem; /* 6xl */
   margin-left: auto;
@@ -18,11 +20,35 @@ body {
   padding-right: 1rem;
 }
 
-/* Small hover effect for cards */
+/* Small hover effect for cards/forms */
 .card-hover:hover {
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   transform: scale(1.05);
   transition: all 0.3s ease;
 }
 
+/* Header overrides */
+header h1 {
+  font-weight: 700;
+}
 
+nav a {
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+nav a:hover {
+  color: #f0f0f0;
+  text-decoration: underline;
+}
+
+/* Footer text styling */
+footer {
+  font-size: 0.875rem;
+  letter-spacing: 0.5px;
+}
+
+/* Table / list styling for reports */
+ul.list-disc li {
+  margin-bottom: 0.5rem;
+}
