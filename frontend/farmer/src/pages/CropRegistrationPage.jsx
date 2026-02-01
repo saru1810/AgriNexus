@@ -24,7 +24,7 @@ const CropRegistrationPage = () => {
           <ul className="list-disc pl-6">
             {crops.map((crop) => (
               <li key={crop.id}>
-                {crop.name} ({crop.type}) - {crop.area} acres
+                {crop.cropName} ({crop.cropType}) - {crop.area} acres
               </li>
             ))}
           </ul>
