@@ -11,23 +11,16 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
-/* Optional container override */
+/* Container for layout */
 .container {
   max-width: 72rem; /* 6xl */
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem; /* px-4 */
+  padding-left: 1rem;
   padding-right: 1rem;
 }
 
-/* Small hover effect for cards/forms */
-.card-hover:hover {
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  transform: scale(1.05);
-  transition: all 0.3s ease;
-}
-
-/* Header overrides */
+/* Header / Nav */
 header h1 {
   font-weight: 700;
 }
@@ -42,13 +35,34 @@ nav a:hover {
   text-decoration: underline;
 }
 
-/* Footer text styling */
+/* Footer styling */
 footer {
   font-size: 0.875rem;
   letter-spacing: 0.5px;
+  text-align: center;
 }
 
-/* Table / list styling for reports */
+/* Hover effect for cards/forms */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+/* Reports list styling */
 ul.list-disc li {
   margin-bottom: 0.5rem;
+}
+
+/* Optional buttons for consistency */
+.btn {
+  @apply px-4 py-2 rounded font-semibold text-white bg-green-600 hover:bg-green-700 transition-colors;
+}
+
+/* Optional small headings */
+h2 {
+  @apply text-2xl font-bold mb-2;
 }
