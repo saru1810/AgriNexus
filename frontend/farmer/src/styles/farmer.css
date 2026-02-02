@@ -1,68 +1,46 @@
-
-/* ================= Tailwind Imports ================= */
+/* ================= Tailwind Directives ================= */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ================= Custom Styles ================= */
+/* ================= Custom Component Styles ================= */
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition;
+  }
 
-/* Body font */
-body {
-  font-family: 'Inter', sans-serif;
+  .btn-primary {
+    @apply bg-green-600 text-white hover:bg-green-700;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-lg shadow-md p-4;
+  }
+
+  /* Headings */
+  .heading {
+    @apply text-xl font-semibold text-green-700;
+  }
+
+  /* Forms */
+  .input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
 }
 
-/* Container for layout */
-.container {
-  max-width: 72rem; /* 6xl */
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-/* Header / Nav */
-header h1 {
-  font-weight: 700;
-}
-
-nav a {
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-nav a:hover {
-  color: #f0f0f0;
-  text-decoration: underline;
-}
-
-/* Footer styling */
-footer {
-  font-size: 0.875rem;
-  letter-spacing: 0.5px;
-  text-align: center;
-}
-
-/* Hover effect for cards/forms */
-.card-hover {
-  transition: all 0.3s ease;
-}
-
-.card-hover:hover {
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  transform: scale(1.05);
-}
-
-/* Reports list styling */
-ul.list-disc li {
-  margin-bottom: 0.5rem;
-}
-
-/* Optional buttons for consistency */
-.btn {
-  @apply px-4 py-2 rounded font-semibold text-white bg-green-600 hover:bg-green-700 transition-colors;
-}
-
-/* Optional small headings */
-h2 {
-  @apply text-2xl font-bold mb-2;
+/* ================= Optional Global Styles ================= */
+@layer base {
+  body {
+    @apply bg-green-50 text-gray-800;
+  }
 }
