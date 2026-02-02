@@ -1,58 +1,59 @@
-import React, { useState } from "react";
-import Dashboard from "../components/Dashboard";
-import CropRegistrationForm from "../components/CropRegistrationForm.jsx";
-import CropStatusUpdateForm from "../components/CropStatusUpdateForm.jsx";
-import FailureReportForm from "../components/FailureReportForm.jsx";
-import DocGeneratorButton from "../components/DocGeneratorButton.jsx";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import PriceGuidance from "../components/PriceGuidance";
 
 const DashboardPage = () => {
-  // Sample crops state (can later fetch from backend)
-  const [crops, setCrops] = useState([
-    { id: 1, name: "Rice", status: "Healthy", type: "Cereal", area: 2 },
-    { id: 2, name: "Wheat", status: "Needs Attention", type: "Cereal", area: 1.5 },
-  ]);
-
-  // Sample reports state
-  const [reports, setReports] = useState([]);
-
-  // Add new crop
-  const handleRegisterCrop = (newCrop) => {
-    const id = crops.length + 1;
-    setCrops([...crops, { ...newCrop, id }]);
-    alert(`${newCrop.cropName} registered successfully!`);
-  };
-
-  // Update crop status
-  const handleUpdateStatus = (cropId, status) => {
-    const updatedCrops = crops.map((crop) =>
-      crop.id === cropId ? { ...crop, status } : crop
-    );
-    setCrops(updatedCrops);
-    alert("Crop status updated!");
-  };
-
-  // Submit failure report
-  const handleReportFailure = (report) => {
-    setReports([...reports, report]);
-    alert("Failure report submitted!");
-  };
+  const navigate = useNavigate();
 
   return (
-    <div className="container mx-auto p-6">
-      <Dashboard crops={crops} />
+    <div className="min-h-screen bg-green-50 p-4">
+      {/* Header */}
+      <div className="bg-white p-4 rounded shadow mb-4">
+        <h1 className="text-2xl font-bold">
+          Welcome, Farmer
+        </h1>
+        <p className="text-gray-600">
+          Manage your crops, track status, and get advisory support
+        </p>
+      </div>
 
-      <CropRegistrationForm onRegister={handleRegisterCrop} />
-      <CropStatusUpdateForm crops={crops} onUpdateStatus={handleUpdateStatus} />
-      <FailureReportForm onReport={handleReportFailure} />
+      {/* Price Guidance */}
+      <div className="mb-6">
+        <PriceGuidance />
+      </div>
 
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold text-green-700 mb-4">Generate Reports</h2>
-        <DocGeneratorButton farmerData={{ crops, reports }} />
+      {/* Action Buttons */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button
+          onClick={() => navigate("/crop-registration")}
+          className="bg-green-600 text-white p-4 rounded shadow hover:bg-green-700"
+        >
+          Crop Registration
+        </button>
+
+        <button
+          onClick={() => navigate("/crop-status")}
+          className="bg-blue-600 text-white p-4 rounded shadow hover:bg-blue-700"
+        >
+          Crop Status Update
+        </button>
+
+        <button
+          onClick={() => navigate("/failure-report")}
+          className="bg-red-600 text-white p-4 rounded shadow hover:bg-red-700"
+        >
+          Report Crop Failure
+        </button>
+
+        <button
+          onClick={() => navigate("/compensation-report")}
+          className="bg-purple-600 text-white p-4 rounded shadow hover:bg-purple-700"
+        >
+          Compensation Support Report
+        </button>
       </div>
     </div>
   );
 };
 
-// src/pages/DashboardPage.jsx
-export default DashboardPage; 
-
+export default DashboardPage;

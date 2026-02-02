@@ -1,51 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import FailureReportForm from "../components/FailureReportForm";
 
 const FailureReportPage = () => {
-  const [reports, setReports] = useState([]);
-
-  const handleReport = (report) => {
-    setReports([...reports, report]);
-    alert("Failure report submitted!");
-  };
-
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-red-700">
-        Report Crop Failure
-      </h1>
+    <div className="min-h-screen bg-green-50 p-4">
+      <div className="bg-white p-5 rounded shadow max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold mb-2 text-red-700">
+          Crop Failure Report
+        </h1>
 
-      <FailureReportForm onReport={handleReport} />
+        <p className="text-gray-600 mb-4">
+          Report crop failure details accurately.  
+          This information will be used for compensation and insurance support.
+        </p>
 
-      {reports.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-2xl font-semibold mb-2">Submitted Reports</h2>
-          <ul className="list-disc pl-6">
-            {reports.map((report, index) => (
-              <li key={index}>
-                <strong>{report.cropName}</strong> - {report.issue} (
-                <span
-                  className={
-                    report.severity === "High"
-                      ? "text-red-600"
-                      : report.severity === "Medium"
-                      ? "text-yellow-600"
-                      : "text-green-600"
-                  }
-                >
-                  {report.severity}
-                </span>
-                ) on {report.date}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+        <FailureReportForm />
+      </div>
     </div>
   );
 };
 
-// src/pages/FailureReportPages.jsx
 export default FailureReportPage;
-  
-

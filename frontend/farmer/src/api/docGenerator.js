@@ -1,25 +1,36 @@
-// src/api/docGenerator.js
-import { jsPDF } from "jspdf";
+// This file ONLY handles API communication
+// It does NOT generate documents on frontend
 
-export async function generateDocument(farmerData) {
+export const generateCompensationReport = async (reportData) => {
   try {
-    const doc = new jsPDF();
+    const response = await fetch("http://localhost:5000/api/generate-report", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(reportData),
+    });
 
-    doc.setFontSize(18);
-    doc.text("Farmer Report", 20, 20);
+    if (!response.ok) {
+      throw new Error("Failed to generate report");
+    }
 
-    doc.setFontSize(12);
-    doc.text(`Farmer Name: ${farmerData.name}`, 20, 40);
-    doc.text(`Crop: ${farmerData.crop}`, 20, 50);
-    doc.text(`Status: ${farmerData.status}`, 20, 60);
+    // Expecting PDF from backend
+    const blob = await response.blob();
 
-    // Convert PDF to Blob and create a URL for download
-    const pdfBlob = doc.output("blob");
-    const pdfUrl = URL.createObjectURL(pdfBlob);
+    // Create download
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Compensation_Report.pdf";
 
-    return { url: pdfUrl }; // matches what DocGeneratorButton expects
-  } catch (err) {
-    console.error("Error generating document:", err);
-    return null;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Document generation error:", error);
+    alert("Unable to generate compensation report. Please try again.");
   }
-}
+};
