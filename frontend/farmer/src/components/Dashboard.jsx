@@ -1,82 +1,127 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import PriceGuidance from "../src/components/PriceGuidance";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  getCrops,
+  getCropStatuses,
+  getAgreements,
+  getCompensationReport,
+  getPriceGuidance,
+} from "../api/farmerApi";
+import { getBuyerDemands } from "../api/buyerApi";
 
-const DashboardPage = () => {
-  const navigate = useNavigate();
+const Dashboard = () => {
+  const [summary, setSummary] = useState({
+    crops: 0,
+    statuses: 0,
+    agreements: 0,
+    compensation: 0,
+  });
+  const [buyerDemands, setBuyerDemands] = useState([]);
+  const [marketPrices, setMarketPrices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock summary data
-  const totalCrops = 5;
-  const ongoingStatus = "On Track: 3, Reduced Yield: 1, Failed: 1";
-  const activeAgreements = 2;
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const [
+          crops,
+          statuses,
+          agreements,
+          compensation,
+          demands,
+          prices,
+        ] = await Promise.all([
+          getCrops(),
+          getCropStatuses(),
+          getAgreements(),
+          getCompensationReport(),
+          getBuyerDemands(),
+          getPriceGuidance(),
+        ]);
+
+        setSummary({
+          crops: crops.length,
+          statuses: statuses.length,
+          agreements: agreements.filter(a => !a.accepted).length,
+          compensation: compensation.length,
+        });
+
+        setBuyerDemands(demands);
+        setMarketPrices(prices);
+      } catch (err) {
+        console.error("Dashboard load error", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadDashboard();
+  }, []);
+
+  if (loading) return <p>Loading Dashboard...</p>;
 
   return (
-    <div className="min-h-screen bg-green-50 p-6">
-      {/* Page Title */}
-      <h1 className="text-3xl font-bold text-center text-green-700 mb-6">
-        Farmer Dashboard
-      </h1>
+    <div className="dashboard-container">
+      {/* Header */}
+      <header className="dashboard-header">
+        <h2>Farmer Dashboard</h2>
+        <Link to="/profile" className="profile-link">
+          My Profile
+        </Link>
+      </header>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-green-100 p-6 rounded shadow text-center hover:scale-105 transition transform">
-          <h2 className="font-semibold text-lg text-green-800">Total Crops</h2>
-          <p className="text-3xl font-bold text-green-700">{totalCrops}</p>
+      <div className="dashboard-grid">
+        <div className="card">
+          <h3>Crop Registration</h3>
+          <p>{summary.crops} crops registered</p>
+          <Link to="/crop-registration">Go</Link>
         </div>
-        <div className="bg-green-100 p-6 rounded shadow text-center hover:scale-105 transition transform">
-          <h2 className="font-semibold text-lg text-green-800">Crop Status</h2>
-          <p className="text-green-700">{ongoingStatus}</p>
+
+        <div className="card">
+          <h3>Crop Status</h3>
+          <p>{summary.statuses} updates</p>
+          <Link to="/crop-status">Go</Link>
         </div>
-        <div className="bg-green-100 p-6 rounded shadow text-center hover:scale-105 transition transform">
-          <h2 className="font-semibold text-lg text-green-800">Active Agreements</h2>
-          <p className="text-3xl font-bold text-green-700">{activeAgreements}</p>
+
+        <div className="card">
+          <h3>Agreements</h3>
+          <p>{summary.agreements} pending</p>
+          <Link to="/agreements">View</Link>
+        </div>
+
+        <div className="card">
+          <h3>Compensation</h3>
+          <p>{summary.compensation} reports</p>
+          <Link to="/compensation">View</Link>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <button
-          onClick={() => navigate("/crop-registration")}
-          className="bg-green-600 hover:bg-green-700 text-white p-4 rounded font-semibold shadow transition"
-        >
-          Crop Registration
-        </button>
-
-        <button
-          onClick={() => navigate("/crop-status")}
-          className="bg-green-500 hover:bg-green-600 text-white p-4 rounded font-semibold shadow transition"
-        >
-          Crop Status Update
-        </button>
-
-        <button
-          onClick={() => navigate("/failure-report")}
-          className="bg-green-400 hover:bg-green-500 text-white p-4 rounded font-semibold shadow transition"
-        >
-          Failure Reporting
-        </button>
-
-        <button
-          onClick={() => navigate("/compensation-report")}
-          className="bg-green-600 hover:bg-green-700 text-white p-4 rounded font-semibold shadow transition"
-        >
-          Compensation Report
-        </button>
-
-        <button
-          onClick={() => navigate("/agreement")}
-          className="bg-green-500 hover:bg-green-600 text-white p-4 rounded font-semibold shadow transition"
-        >
-          Farmer-Buyer Agreement
-        </button>
+      {/* Buyer Demands */}
+      <div className="card full-width">
+        <h3>Buyer Demands</h3>
+        {buyerDemands.slice(0, 3).map((d, i) => (
+          <p key={i}>
+            {d.crop} • {d.quantity} kg • ₹{d.price}/kg
+          </p>
+        ))}
+        <Link to="/buyer-demands">View All</Link>
       </div>
 
-      {/* Price Guidance Section */}
-      <div className="bg-green-100 p-4 rounded shadow">
-        <PriceGuidance />
+      {/* Market Price – Gold-rate style */}
+      <div className="card market-card">
+        <h3>Live Market Prices</h3>
+        <div className="market-ticker">
+          {marketPrices.map((item, idx) => (
+            <span key={idx} className="ticker-item">
+              {item.crop}: ₹{item.price}/kg
+            </span>
+          ))}
+        </div>
+        <small>Last updated: {new Date().toLocaleString()}</small>
       </div>
     </div>
   );
 };
 
-export default DashboardPage;
+export default Dashboard;

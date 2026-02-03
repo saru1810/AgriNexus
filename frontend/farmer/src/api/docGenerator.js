@@ -1,41 +1,35 @@
 // src/api/docGenerator.js
-
 import jsPDF from "jspdf";
 
-/**
- * Generate PDF for Crop Registration / Compensation Report
- * @param {Object} data - the data to include in PDF
- * @param {string} data.title - Title of the document
- * @param {Array} data.fields - Array of { label, value } to display
- * @param {string} [fileName] - Optional file name
- */
-export function generatePDF(data, fileName = "document.pdf") {
-  try {
-    const doc = new jsPDF();
+// Generate PDF for Compensation Report (downloadable)
+export const generateCompensationPDF = (data) => {
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text("Compensation Report", 20, 20);
 
-    // Title
-    doc.setFontSize(18);
-    doc.setTextColor(22, 163, 74); // match green from farmer.css
-    doc.text(data.title, 14, 20);
+  data.forEach((item, index) => {
+    doc.text(
+      `${index + 1}. Crop: ${item.crop}, Quantity: ${item.quantity} kg, Amount: ₹${item.amount}`,
+      20,
+      30 + index * 10
+    );
+  });
 
-    // Line under title
-    doc.setDrawColor(22, 163, 74);
-    doc.setLineWidth(0.5);
-    doc.line(14, 22, 196, 22);
+  doc.save("Compensation_Report.pdf"); // triggers download
+};
 
-    // Add fields
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    let y = 35;
-    data.fields.forEach((field) => {
-      doc.text(`${field.label}: ${field.value}`, 14, y);
-      y += 10;
-    });
+// Generate PDF for Agreement (preview only)
+export const generateAgreementPDF = (data) => {
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text("Agreement", 20, 20);
 
-    // Save PDF
-    doc.save(fileName);
-  } catch (error) {
-    console.error("PDF generation failed:", error);
-    throw error;
-  }
-}
+  doc.setFontSize(12);
+  doc.text(`Farmer Name: ${data.farmerName}`, 20, 30);
+  doc.text(`Crop: ${data.crop}`, 20, 40);
+  doc.text(`Quantity: ${data.quantity} kg`, 20, 50);
+  doc.text(`Agreement Terms: ${data.terms}`, 20, 60);
+
+  // Instead of saving, return as data URL for preview
+  return doc.output("datauristring");
+};

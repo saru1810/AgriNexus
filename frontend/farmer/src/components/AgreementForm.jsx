@@ -1,103 +1,99 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// src/components/AgreementForm.jsx
+import React, { useState, useEffect } from "react";
 import { acceptAgreement } from "../api/farmerApi";
+import { generateAgreementPDF } from "../api/docGenerator";
 
-const AgreementForm = () => {
-  const navigate = useNavigate();
+const AgreementForm = ({ agreementData }) => {
+  const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [agreementText, setAgreementText] = useState("");
 
-  const [agreement, setAgreement] = useState({
-    cropName: "",
-    quantity: "",
-    deliveryDate: "",
-    agreed: false,
-  });
+  // Automatically generate agreement text based on agreementData
+  useEffect(() => {
+    if (agreementData) {
+      const text = `
+This Crop Supply and Failure Management Agreement is made on ${agreementData.date}, 
+between Farmer ${agreementData.farmerName}, residing at ${agreementData.farmerAddress}, 
+and Buyer ${agreementData.buyerName}, located at ${agreementData.buyerAddress}.
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+Under this agreement, the Farmer agrees to supply ${agreementData.quantity} kg of ${agreementData.crop} 
+at a rate of ₹${agreementData.price} per kg, ensuring the produce meets the agreed quality and industry standards.
 
-  const handleChange = (e) => {
-    setAgreement({ ...agreement, [e.target.name]: e.target.value });
-    setError("");
-    setSuccess("");
-  };
+Deliveries will be made to the Buyer’s warehouse by ${agreementData.deliveryDate}, 
+with payment due within ${agreementData.paymentTerms} days of delivery. 
+In case of crop failure due to unforeseen circumstances such as drought, pest infestation, or disease, 
+the Farmer shall notify the Buyer within 48 hours, 
+and both parties will jointly assess the loss to determine compensation, replacement, or alternative arrangements.
 
-  const handleAgree = async () => {
-    if (!agreement.cropName || !agreement.quantity || !agreement.deliveryDate) {
-      setError("Please fill all highlighted fields before agreeing.");
+The risk of loss remains with the Farmer until the crops are delivered to the Buyer. 
+Any disputes arising from this agreement shall be resolved through mutual negotiation or arbitration 
+under ${agreementData.jurisdiction} jurisdiction.
+      `;
+      setAgreementText(text);
+    }
+  }, [agreementData]);
+
+  const handleSubmit = async () => {
+    if (!agreed) {
+      setMessage("You must agree to the terms before submitting.");
       return;
     }
 
+    setLoading(true);
+    setMessage("");
     try {
-      await acceptAgreement(agreement); // Send agreement to backend
-      setAgreement({ ...agreement, agreed: true });
-      setSuccess("Agreement recorded successfully.");
+      const payload = { ...agreementData, terms: agreementText };
+      await acceptAgreement(payload);
+      setMessage("Agreement accepted successfully!");
+      setTimeout(() => {
+  navigate("/dashboard"); // Redirect to dashboard
+}, 1200);
     } catch (err) {
-      setError(err.message || "Error submitting agreement");
+      setMessage("Failed to submit agreement. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handlePreviewPDF = () => {
+    const pdfUrl = generateAgreementPDF({ ...agreementData, terms: agreementText });
+    window.open(pdfUrl, "_blank"); // preview in new tab
+  };
+
+  if (!agreementData) return <p>Loading agreement...</p>;
+
   return (
-    <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-4 bg-gray-50 border p-2 rounded hover:bg-gray-100 transition"
-      >
-        ← Back
-      </button>
+    <div className="agreement-form">
+      <h2>Crop Supply and Failure Management Agreement</h2>
+      <div className="agreement-text">
+        <pre>{agreementText}</pre>
+      </div>
 
-      <h2 className="text-2xl font-bold mb-4 text-center text-green-700">
-        Farmer–Buyer Agreement
-      </h2>
+      <div className="agreement-actions">
+        <label>
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+          />
+          I agree to the terms of this agreement
+        </label>
 
-      <p className="text-gray-700 leading-relaxed mb-6">
-        I agree to supply{" "}
-        <input
-          type="text"
-          name="cropName"
-          value={agreement.cropName}
-          onChange={handleChange}
-          className="border-b-2 border-green-600 font-semibold text-green-700 px-1 outline-none"
-          placeholder="Crop Name"
-        />{" "}
-        with an approximate quantity of{" "}
-        <input
-          type="number"
-          name="quantity"
-          value={agreement.quantity}
-          onChange={handleChange}
-          className="border-b-2 border-green-600 font-semibold text-green-700 px-1 outline-none w-24"
-          placeholder="Quantity"
-        />{" "}
-        quintals, to be delivered on or around{" "}
-        <input
-          type="date"
-          name="deliveryDate"
-          value={agreement.deliveryDate}
-          onChange={handleChange}
-          className="border-b-2 border-green-600 font-semibold text-green-700 px-1 outline-none"
-        />
-        . This agreement is for coordination purposes only and is not a legal
-        contract.
-      </p>
+        <div className="buttons">
+          <button onClick={handlePreviewPDF} disabled={loading}>
+            Preview PDF
+          </button>
+          <button onClick={handleSubmit} disabled={loading}>
+            {loading ? "Submitting..." : "Accept Agreement"}
+          </button>
+        </div>
 
-      {error && <p className="text-red-600 mb-3 text-center">{error}</p>}
-      {success && <p className="text-green-600 mb-3 text-center">{success}</p>}
-
-      <button
-        onClick={handleAgree}
-        disabled={agreement.agreed}
-        className={`w-full px-6 py-2 rounded font-semibold text-white transition ${
-          agreement.agreed
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-green-600 hover:bg-green-700"
-        }`}
-      >
-        I Agree
-      </button>
+        {message && <p className="message">{message}</p>}
+      </div>
     </div>
   );
 };
 
 export default AgreementForm;
-

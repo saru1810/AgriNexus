@@ -1,93 +1,68 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// src/components/CompensationReport.jsx
+import React, { useEffect, useState } from "react";
 import { getCompensationReport } from "../api/farmerApi";
+import { generateCompensationPDF } from "../api/docGenerator";
 
-const CompensationReport = () => {
-  const navigate = useNavigate();
-
-  const [reportData, setReportData] = useState(null);
+const CompensationReport = ({ farmerId }) => {
+  const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchReport = async () => {
+    const fetchReports = async () => {
+      setLoading(true);
+      setError("");
       try {
-        const data = await getCompensationReport({}); // payload if needed
-        setReportData(data);
+        const payload = { farmerId }; // backend may filter by farmer
+        const data = await getCompensationReport(payload);
+        setReports(data); // expected: array of {crop, quantity, amount, date}
       } catch (err) {
-        setError(err.message || "Error fetching report");
+        console.error(err);
+        setError("Failed to fetch compensation reports.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchReport();
-  }, []);
+    fetchReports();
+  }, [farmerId]);
 
-  const handleExportPDF = () => {
-    console.log("Exporting Compensation Report as PDF:", reportData);
-    alert("Compensation report exported as PDF (simulation)");
+  const handleDownloadPDF = () => {
+    generateCompensationPDF(reports);
+    setTimeout(() => {
+  navigate("/dashboard"); // Redirect to dashboard
+}, 1200);
   };
 
-  if (loading)
-    return <p className="text-center text-gray-600 mt-6">Loading report...</p>;
-
-  if (error)
-    return <p className="text-center text-red-600 mt-6">{error}</p>;
+  if (loading) return <p>Loading compensation reports...</p>;
+  if (error) return <p className="error">{error}</p>;
+  if (reports.length === 0) return <p>No compensation reports available.</p>;
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-4 bg-gray-50 border p-2 rounded hover:bg-gray-100 transition"
-      >
-        ← Back
-      </button>
+    <div className="compensation-report">
+      <h2>Compensation Report</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Crop</th>
+            <th>Quantity (kg)</th>
+            <th>Amount (₹)</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reports.map((report, index) => (
+            <tr key={index}>
+              <td>{report.crop}</td>
+              <td>{report.quantity}</td>
+              <td>{report.amount}</td>
+              <td>{report.date}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      <h2 className="text-2xl font-bold mb-4 text-center text-green-700">
-        Compensation Support Report
-      </h2>
-
-      <p className="text-sm text-gray-600 mb-6 text-center">
-        This report can be used for government compensation or insurance claims.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <strong>Crop Name:</strong> {reportData.cropName}
-        </div>
-        <div>
-          <strong>Sowing Date:</strong> {reportData.sowingDate}
-        </div>
-        <div>
-          <strong>Expected Harvest Date:</strong>{" "}
-          {reportData.expectedHarvestDate}
-        </div>
-        <div>
-          <strong>Estimated Yield:</strong> {reportData.estimatedYield}
-        </div>
-        <div>
-          <strong>Actual Yield:</strong> {reportData.actualYield}
-        </div>
-        <div>
-          <strong>Failure Date:</strong> {reportData.failureDate}
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <strong>Failure Reason:</strong>
-        <p className="mt-1 text-gray-700">{reportData.failureReason}</p>
-      </div>
-
-      <div className="text-center">
-        <button
-          onClick={handleExportPDF}
-          className="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition"
-        >
-          Export as PDF
-        </button>
-      </div>
+      <button onClick={handleDownloadPDF}>Download PDF</button>
     </div>
   );
 };
