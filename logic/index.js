@@ -1,29 +1,11 @@
-const { matchCrop } = require("./cropMatching");
-const { detectFailure } = require("./failureHandling");
-const { calculateCompensation } = require("./compensation");
-
-function processFarmerData(data) {
-  const recommendedCrop = matchCrop(data);
-
-  const failureResult = detectFailure({
-    expectedYield: data.expectedYield,
-    actualYield: data.actualYield
-  });
-
-  let compensation = null;
-
-  if (failureResult.failed) {
-    compensation = calculateCompensation({
-      lossPercentage: failureResult.lossPercentage,
-      landArea: data.landArea
-    });
-  }
-
-  return {
-    recommendedCrop,
-    failureResult,
-    compensation
-  };
-}
-
-module.exports = { processFarmerData };
+module.exports = {
+  ...require("./users"),
+  ...require("./crops"),
+  ...require("./demands"),
+  ...require("./matching"),
+  ...require("./cropStatus"),
+  ...require("./failureReport"),
+  ...require("./agreement"),
+  ...require("./priceGuidance"),
+  ...require("./compensationReport")
+};
