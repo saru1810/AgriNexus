@@ -1,28 +1,12 @@
 import React from "react";
 
-const PriceGuidance = () => {
-  // Advisory-only mock data (can later come from backend)
-  const priceData = [
-    {
-      crop: "Rice",
-      priceRange: "₹2,200 – ₹2,600 / quintal",
-      demand: "High",
-    },
-    {
-      crop: "Wheat",
-      priceRange: "₹2,000 – ₹2,300 / quintal",
-      demand: "Medium",
-    },
-    {
-      crop: "Maize",
-      priceRange: "₹1,800 – ₹2,100 / quintal",
-      demand: "Medium",
-    },
-    {
-      crop: "Millets",
-      priceRange: "₹2,800 – ₹3,200 / quintal",
-      demand: "High",
-    },
+const PriceGuidance = ({ priceData }) => {
+  // Use backend data if passed, otherwise fallback to mock
+  const data = priceData ?? [
+    { crop: "Rice", priceRange: "₹2,200 – ₹2,600 / quintal", demand: "High" },
+    { crop: "Wheat", priceRange: "₹2,000 – ₹2,300 / quintal", demand: "Medium" },
+    { crop: "Maize", priceRange: "₹1,800 – ₹2,100 / quintal", demand: "Medium" },
+    { crop: "Millets", priceRange: "₹2,800 – ₹3,200 / quintal", demand: "High" },
   ];
 
   const getDemandStyle = (demand) => {
@@ -33,7 +17,7 @@ const PriceGuidance = () => {
 
   return (
     <div className="bg-white p-5 rounded shadow">
-      <h2 className="text-xl font-bold mb-3 text-center">
+      <h2 className="text-xl font-bold mb-3 text-center text-green-600">
         Price Guidance (Advisory Only)
       </h2>
 
@@ -42,16 +26,14 @@ const PriceGuidance = () => {
       </p>
 
       <div className="space-y-3">
-        {priceData.map((item, index) => (
+        {data.map((item, index) => (
           <div
             key={index}
-            className="flex justify-between items-center border-b pb-2"
+            className="flex justify-between items-center border-b border-gray-200 pb-2"
           >
             <span className="font-semibold">{item.crop}</span>
             <span>{item.priceRange}</span>
-            <span className={getDemandStyle(item.demand)}>
-              {item.demand}
-            </span>
+            <span className={getDemandStyle(item.demand)}>{item.demand}</span>
           </div>
         ))}
       </div>

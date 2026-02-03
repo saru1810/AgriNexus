@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { updateCropStatus } from "../api/farmerApi";
 
 const CropStatusUpdateForm = () => {
-  // Mock crop list (later from backend)
+  const navigate = useNavigate();
+
+  // Mock crop list (can later come from backend)
   const crops = ["Rice", "Wheat", "Maize", "Millets"];
 
   const [formData, setFormData] = useState({
@@ -17,6 +21,7 @@ const CropStatusUpdateForm = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
+    setSuccess("");
   };
 
   const validate = () => {
@@ -24,39 +29,47 @@ const CropStatusUpdateForm = () => {
 
     if (!formData.cropName) tempErrors.cropName = "Please select a crop";
     if (!formData.status) tempErrors.status = "Please select crop status";
-    if (!formData.updateDate)
-      tempErrors.updateDate = "Update date is required";
+    if (!formData.updateDate) tempErrors.updateDate = "Update date is required";
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
-    console.log("Crop Status Updated:", formData);
-
-    setSuccess("Crop status updated successfully!");
-
-    setFormData({
-      cropName: "",
-      status: "",
-      updateDate: "",
-      notes: "",
-    });
+    try {
+      await updateCropStatus(formData); // Send data to backend
+      setSuccess("Crop status updated successfully!");
+      setFormData({
+        cropName: "",
+        status: "",
+        updateDate: "",
+        notes: "",
+      });
+    } catch (err) {
+      setErrors({ submit: err.message || "Error updating status" });
+    }
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded shadow">
-      <h2 className="text-2xl font-bold mb-4 text-center">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 bg-gray-50 border p-2 rounded hover:bg-gray-100 transition"
+      >
+        ← Back
+      </button>
+
+      <h2 className="text-2xl font-bold mb-4 text-center text-green-600">
         Crop Status Update
       </h2>
 
-      {success && (
-        <p className="text-green-600 text-center mb-4">{success}</p>
-      )}
+      {success && <p className="text-green-600 text-center mb-4">{success}</p>}
+      {errors.submit && <p className="text-red-600 text-center mb-4">{errors.submit}</p>}
 
       <form onSubmit={handleSubmit}>
         {/* Crop Selection */}
@@ -66,7 +79,7 @@ const CropStatusUpdateForm = () => {
             name="cropName"
             value={formData.cropName}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
           >
             <option value="">-- Select Crop --</option>
             {crops.map((crop, index) => (
@@ -75,9 +88,7 @@ const CropStatusUpdateForm = () => {
               </option>
             ))}
           </select>
-          {errors.cropName && (
-            <p className="text-red-600 text-sm">{errors.cropName}</p>
-          )}
+          {errors.cropName && <p className="text-red-600 text-sm">{errors.cropName}</p>}
         </div>
 
         {/* Status */}
@@ -87,45 +98,37 @@ const CropStatusUpdateForm = () => {
             name="status"
             value={formData.status}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
           >
             <option value="">-- Select Status --</option>
             <option value="On Track">On Track</option>
             <option value="Reduced Yield">Reduced Yield</option>
             <option value="Crop Failed">Crop Failed</option>
           </select>
-          {errors.status && (
-            <p className="text-red-600 text-sm">{errors.status}</p>
-          )}
+          {errors.status && <p className="text-red-600 text-sm">{errors.status}</p>}
         </div>
 
         {/* Update Date */}
         <div className="mb-3">
-          <label className="block font-semibold mb-1">
-            Status Update Date
-          </label>
+          <label className="block font-semibold mb-1">Status Update Date</label>
           <input
             type="date"
             name="updateDate"
             value={formData.updateDate}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
           />
-          {errors.updateDate && (
-            <p className="text-red-600 text-sm">{errors.updateDate}</p>
-          )}
+          {errors.updateDate && <p className="text-red-600 text-sm">{errors.updateDate}</p>}
         </div>
 
         {/* Notes */}
         <div className="mb-4">
-          <label className="block font-semibold mb-1">
-            Notes (optional)
-          </label>
+          <label className="block font-semibold mb-1">Notes (optional)</label>
           <textarea
             name="notes"
             value={formData.notes}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
             rows="3"
             placeholder="Any observations..."
           />

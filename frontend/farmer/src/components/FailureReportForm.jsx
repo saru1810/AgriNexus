@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { reportCropFailure } from "../api/farmerApi";
 
 const FailureReportForm = () => {
+  const navigate = useNavigate();
+
   // Mock crops list (later from backend)
   const crops = ["Rice", "Wheat", "Maize", "Millets"];
 
@@ -17,47 +21,55 @@ const FailureReportForm = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
+    setSuccess("");
   };
 
   const validate = () => {
     let tempErrors = {};
 
     if (!formData.cropName) tempErrors.cropName = "Please select a crop";
-    if (!formData.failureDate)
-      tempErrors.failureDate = "Failure date is required";
-    if (!formData.reason)
-      tempErrors.reason = "Cause / reason is mandatory";
+    if (!formData.failureDate) tempErrors.failureDate = "Failure date is required";
+    if (!formData.reason) tempErrors.reason = "Cause / reason is mandatory";
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
-    console.log("Failure Report Submitted:", formData);
-
-    setSuccess("Crop failure reported successfully!");
-
-    setFormData({
-      cropName: "",
-      failureDate: "",
-      reason: "",
-      notes: "",
-    });
+    try {
+      await reportCropFailure(formData); // Send data to backend
+      setSuccess("Crop failure reported successfully!");
+      setFormData({
+        cropName: "",
+        failureDate: "",
+        reason: "",
+        notes: "",
+      });
+    } catch (err) {
+      setErrors({ submit: err.message || "Error submitting report" });
+    }
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded shadow">
-      <h2 className="text-2xl font-bold mb-4 text-center">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 bg-gray-50 border p-2 rounded hover:bg-gray-100 transition"
+      >
+        ← Back
+      </button>
+
+      <h2 className="text-2xl font-bold mb-4 text-center text-red-600">
         Crop Failure Report
       </h2>
 
-      {success && (
-        <p className="text-green-600 text-center mb-4">{success}</p>
-      )}
+      {success && <p className="text-green-600 text-center mb-4">{success}</p>}
+      {errors.submit && <p className="text-red-600 text-center mb-4">{errors.submit}</p>}
 
       <form onSubmit={handleSubmit}>
         {/* Crop Selection */}
@@ -67,7 +79,7 @@ const FailureReportForm = () => {
             name="cropName"
             value={formData.cropName}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
           >
             <option value="">-- Select Crop --</option>
             {crops.map((crop, index) => (
@@ -76,56 +88,44 @@ const FailureReportForm = () => {
               </option>
             ))}
           </select>
-          {errors.cropName && (
-            <p className="text-red-600 text-sm">{errors.cropName}</p>
-          )}
+          {errors.cropName && <p className="text-red-600 text-sm">{errors.cropName}</p>}
         </div>
 
         {/* Failure Date */}
         <div className="mb-3">
-          <label className="block font-semibold mb-1">
-            Date of Failure
-          </label>
+          <label className="block font-semibold mb-1">Date of Failure</label>
           <input
             type="date"
             name="failureDate"
             value={formData.failureDate}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
           />
-          {errors.failureDate && (
-            <p className="text-red-600 text-sm">{errors.failureDate}</p>
-          )}
+          {errors.failureDate && <p className="text-red-600 text-sm">{errors.failureDate}</p>}
         </div>
 
         {/* Cause / Reason */}
         <div className="mb-3">
-          <label className="block font-semibold mb-1">
-            Cause / Reason
-          </label>
+          <label className="block font-semibold mb-1">Cause / Reason</label>
           <textarea
             name="reason"
             value={formData.reason}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
             rows="3"
             placeholder="e.g., Flood, drought, pest attack, disease"
           />
-          {errors.reason && (
-            <p className="text-red-600 text-sm">{errors.reason}</p>
-          )}
+          {errors.reason && <p className="text-red-600 text-sm">{errors.reason}</p>}
         </div>
 
         {/* Additional Notes */}
         <div className="mb-4">
-          <label className="block font-semibold mb-1">
-            Additional Notes (optional)
-          </label>
+          <label className="block font-semibold mb-1">Additional Notes (optional)</label>
           <textarea
             name="notes"
             value={formData.notes}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded"
             rows="2"
           />
         </div>

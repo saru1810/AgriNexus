@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { acceptAgreement } from "../api/farmerApi";
 
 const AgreementForm = () => {
+  const navigate = useNavigate();
+
   const [agreement, setAgreement] = useState({
     cropName: "",
     quantity: "",
@@ -14,23 +18,35 @@ const AgreementForm = () => {
   const handleChange = (e) => {
     setAgreement({ ...agreement, [e.target.name]: e.target.value });
     setError("");
+    setSuccess("");
   };
 
-  const handleAgree = () => {
+  const handleAgree = async () => {
     if (!agreement.cropName || !agreement.quantity || !agreement.deliveryDate) {
       setError("Please fill all highlighted fields before agreeing.");
       return;
     }
 
-    console.log("Agreement Accepted:", agreement);
-
-    setAgreement({ ...agreement, agreed: true });
-    setSuccess("Agreement recorded successfully.");
+    try {
+      await acceptAgreement(agreement); // Send agreement to backend
+      setAgreement({ ...agreement, agreed: true });
+      setSuccess("Agreement recorded successfully.");
+    } catch (err) {
+      setError(err.message || "Error submitting agreement");
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-      <h2 className="text-2xl font-bold mb-4 text-center">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 bg-gray-50 border p-2 rounded hover:bg-gray-100 transition"
+      >
+        ← Back
+      </button>
+
+      <h2 className="text-2xl font-bold mb-4 text-center text-green-700">
         Farmer–Buyer Agreement
       </h2>
 
@@ -65,13 +81,13 @@ const AgreementForm = () => {
         contract.
       </p>
 
-      {error && <p className="text-red-600 mb-3">{error}</p>}
-      {success && <p className="text-green-600 mb-3">{success}</p>}
+      {error && <p className="text-red-600 mb-3 text-center">{error}</p>}
+      {success && <p className="text-green-600 mb-3 text-center">{success}</p>}
 
       <button
         onClick={handleAgree}
         disabled={agreement.agreed}
-        className={`px-6 py-2 rounded font-semibold text-white transition ${
+        className={`w-full px-6 py-2 rounded font-semibold text-white transition ${
           agreement.agreed
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-green-600 hover:bg-green-700"
@@ -84,3 +100,4 @@ const AgreementForm = () => {
 };
 
 export default AgreementForm;
+

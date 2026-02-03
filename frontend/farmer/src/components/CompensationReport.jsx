@@ -1,25 +1,51 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getCompensationReport } from "../api/farmerApi";
 
 const CompensationReport = () => {
-  // Mock data (later comes from backend)
-  const reportData = {
-    cropName: "Rice",
-    sowingDate: "2025-06-10",
-    expectedHarvestDate: "2025-10-15",
-    estimatedYield: "40 quintals",
-    actualYield: "15 quintals",
-    failureDate: "2025-09-20",
-    failureReason: "Flood damage due to heavy rainfall",
-  };
+  const navigate = useNavigate();
+
+  const [reportData, setReportData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchReport = async () => {
+      try {
+        const data = await getCompensationReport({}); // payload if needed
+        setReportData(data);
+      } catch (err) {
+        setError(err.message || "Error fetching report");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReport();
+  }, []);
 
   const handleExportPDF = () => {
     console.log("Exporting Compensation Report as PDF:", reportData);
     alert("Compensation report exported as PDF (simulation)");
   };
 
+  if (loading)
+    return <p className="text-center text-gray-600 mt-6">Loading report...</p>;
+
+  if (error)
+    return <p className="text-center text-red-600 mt-6">{error}</p>;
+
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-      <h2 className="text-2xl font-bold mb-4 text-center">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-4 bg-gray-50 border p-2 rounded hover:bg-gray-100 transition"
+      >
+        ← Back
+      </button>
+
+      <h2 className="text-2xl font-bold mb-4 text-center text-green-700">
         Compensation Support Report
       </h2>
 
@@ -39,8 +65,7 @@ const CompensationReport = () => {
           {reportData.expectedHarvestDate}
         </div>
         <div>
-          <strong>Estimated Yield:</strong>{" "}
-          {reportData.estimatedYield}
+          <strong>Estimated Yield:</strong> {reportData.estimatedYield}
         </div>
         <div>
           <strong>Actual Yield:</strong> {reportData.actualYield}
@@ -52,9 +77,7 @@ const CompensationReport = () => {
 
       <div className="mb-6">
         <strong>Failure Reason:</strong>
-        <p className="mt-1 text-gray-700">
-          {reportData.failureReason}
-        </p>
+        <p className="mt-1 text-gray-700">{reportData.failureReason}</p>
       </div>
 
       <div className="text-center">

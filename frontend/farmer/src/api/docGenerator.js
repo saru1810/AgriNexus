@@ -1,36 +1,41 @@
-// This file ONLY handles API communication
-// It does NOT generate documents on frontend
+// src/api/docGenerator.js
 
-export const generateCompensationReport = async (reportData) => {
+import jsPDF from "jspdf";
+
+/**
+ * Generate PDF for Crop Registration / Compensation Report
+ * @param {Object} data - the data to include in PDF
+ * @param {string} data.title - Title of the document
+ * @param {Array} data.fields - Array of { label, value } to display
+ * @param {string} [fileName] - Optional file name
+ */
+export function generatePDF(data, fileName = "document.pdf") {
   try {
-    const response = await fetch("http://localhost:5000/api/generate-report", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(reportData),
+    const doc = new jsPDF();
+
+    // Title
+    doc.setFontSize(18);
+    doc.setTextColor(22, 163, 74); // match green from farmer.css
+    doc.text(data.title, 14, 20);
+
+    // Line under title
+    doc.setDrawColor(22, 163, 74);
+    doc.setLineWidth(0.5);
+    doc.line(14, 22, 196, 22);
+
+    // Add fields
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    let y = 35;
+    data.fields.forEach((field) => {
+      doc.text(`${field.label}: ${field.value}`, 14, y);
+      y += 10;
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to generate report");
-    }
-
-    // Expecting PDF from backend
-    const blob = await response.blob();
-
-    // Create download
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "Compensation_Report.pdf";
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    window.URL.revokeObjectURL(url);
+    // Save PDF
+    doc.save(fileName);
   } catch (error) {
-    console.error("Document generation error:", error);
-    alert("Unable to generate compensation report. Please try again.");
+    console.error("PDF generation failed:", error);
+    throw error;
   }
-};
+}

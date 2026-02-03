@@ -25,25 +25,30 @@ const UserRegistrationPage = () => {
     // Later: send this to backend
     console.log("User Registered:", formData);
 
-    // For now: redirect based on role
-    if (formData.role === "Farmer") {
-      navigate("/dashboard");
-    } else {
-      navigate("/dashboard"); // buyer dashboard later
-    }
+    // Navigate to dashboard
+    navigate("/dashboard");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-50">
+    <div className="min-h-screen bg-green-50 flex items-center justify-center p-4">
       <div className="bg-white p-6 rounded shadow w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-4">
-          User Registration
-        </h1>
+        {/* Header with Back Button */}
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold text-center flex-grow">
+            User Registration
+          </h1>
+          <button
+            onClick={() => navigate(-1)}
+            className="ml-2 bg-gray-100 border border-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-200 transition"
+          >
+            ← Back
+          </button>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
           <div>
-            <label className="block font-semibold">Name</label>
+            <label className="block font-semibold mb-1">Name</label>
             <input
               type="text"
               name="name"
@@ -51,12 +56,13 @@ const UserRegistrationPage = () => {
               value={formData.name}
               onChange={handleChange}
               className="w-full border p-2 rounded"
+              placeholder="Enter your full name"
             />
           </div>
 
           {/* Mobile Number */}
           <div>
-            <label className="block font-semibold">Mobile Number</label>
+            <label className="block font-semibold mb-1">Mobile Number</label>
             <input
               type="tel"
               name="mobile"
@@ -71,7 +77,7 @@ const UserRegistrationPage = () => {
 
           {/* Location */}
           <div>
-            <label className="block font-semibold">
+            <label className="block font-semibold mb-1">
               Location (Village / District)
             </label>
             <input
@@ -81,12 +87,13 @@ const UserRegistrationPage = () => {
               value={formData.location}
               onChange={handleChange}
               className="w-full border p-2 rounded"
+              placeholder="e.g., Salem, Tamil Nadu"
             />
           </div>
 
           {/* Preferred Language */}
           <div>
-            <label className="block font-semibold">
+            <label className="block font-semibold mb-1">
               Preferred Language
             </label>
             <select
@@ -102,7 +109,7 @@ const UserRegistrationPage = () => {
 
           {/* Role */}
           <div>
-            <label className="block font-semibold">Role</label>
+            <label className="block font-semibold mb-1">Role</label>
             <select
               name="role"
               value={formData.role}
@@ -117,7 +124,7 @@ const UserRegistrationPage = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-2 rounded font-semibold hover:bg-green-700"
+            className="w-full bg-green-600 text-white py-2 rounded font-semibold hover:bg-green-700 transition"
           >
             Register & Continue
           </button>

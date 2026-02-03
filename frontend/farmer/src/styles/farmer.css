@@ -74,6 +74,7 @@ p {
 
 .price-guidance {
   border-left: 6px solid #16a34a;
+  padding-left: 1rem;
 }
 
 /* =========================
@@ -120,20 +121,12 @@ button:hover {
   transform: translateY(-1px);
 }
 
-/* Button Colors */
+/* Button Colors (all green shades) */
 .bg-green-600 { background-color: #16a34a; }
 .bg-green-700 { background-color: #15803d; }
-
-.bg-blue-600 { background-color: #2563eb; }
-.bg-blue-700 { background-color: #1d4ed8; }
-
-.bg-red-600 { background-color: #dc2626; }
-.bg-red-700 { background-color: #b91c1c; }
-
-.bg-purple-600 { background-color: #7c3aed; }
-.bg-purple-700 { background-color: #6d28d9; }
-
+.bg-green-800 { background-color: #166534; } /* optional for hover or accent */
 .text-white { color: #ffffff; }
+
 
 /* =========================
    GRID UTILITIES

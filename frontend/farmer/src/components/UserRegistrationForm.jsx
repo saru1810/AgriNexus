@@ -1,150 +1,133 @@
-import React, { useState } from 'react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { registerFarmer } from "../api/farmerApi";
 
-const UserRegistrationForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    mobile: '',
-    location: '',
-    language: 'Tamil', // default
-    role: 'Farmer',   // default for this branch
-  });
+export default function UserRegistrationForm() {
+  const navigate = useNavigate();
 
-  const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState('');
+  const [name, setName] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [location, setLocation] = useState("");
+  const [language, setLanguage] = useState("English");
+  const [role, setRole] = useState("Farmer");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Handle input changes
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '' });
-  };
+  // Mobile number validation
+  const isValidMobile = (num) => /^\d{10}$/.test(num);
 
-  // Validation
-  const validate = () => {
-    let tempErrors = {};
-    if (!formData.name) tempErrors.name = 'Name is required';
-    if (!formData.mobile) tempErrors.mobile = 'Mobile number is required';
-    else if (!/^\d{10}$/.test(formData.mobile))
-      tempErrors.mobile = 'Mobile number must be 10 digits';
-    if (!formData.location) tempErrors.location = 'Location is required';
-    if (!formData.language) tempErrors.language = 'Please select a language';
-    if (!formData.role) tempErrors.role = 'Please select a role';
-
-    setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
-  };
-
-  // Handle submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    setError("");
 
-    console.log('User Registered:', formData);
-    setSuccessMessage('Registration successful! Redirecting to Dashboard...');
+    if (!name || !mobile || !location || !language || !role) {
+      setError("Please fill all the fields");
+      return;
+    }
 
-    // Reset form (optional)
-    // setFormData({ name: '', mobile: '', location: '', language: 'Tamil', role: 'Farmer' });
+    if (!isValidMobile(mobile)) {
+      setError("Mobile number must be 10 digits");
+      return;
+    }
 
-    // Simulate redirect after 2 seconds
-    setTimeout(() => {
-      console.log('Redirecting to Farmer Dashboard...');
-      // Here you can use navigate('/dashboard') if using react-router
-      setSuccessMessage('');
-    }, 2000);
+    setLoading(true);
+    try {
+      await registerFarmer({ name, mobile, location, language, role });
+      navigate("/dashboard"); // redirect to Dashboard
+    } catch (err) {
+      setError(err.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="p-6 max-w-md mx-auto bg-green-50 rounded shadow"
-    >
-      <h2 className="text-2xl font-bold mb-4 text-center">Farmer Registration</h2>
+    <div className="w-full min-h-screen flex justify-center items-start p-6">
+      <div className="max-w-2xl w-full bg-white shadow rounded p-6">
 
-      {successMessage && (
-        <p className="text-green-600 mb-4 text-center">{successMessage}</p>
-      )}
-
-      {/* Name */}
-      <div className="mb-3">
-        <label className="block mb-1 font-semibold">Name</label>
-        <input
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-        />
-        {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
-      </div>
-
-      {/* Mobile Number */}
-      <div className="mb-3">
-        <label className="block mb-1 font-semibold">Mobile Number</label>
-        <input
-          type="text"
-          name="mobile"
-          value={formData.mobile}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-          maxLength="10"
-        />
-        {errors.mobile && <p className="text-red-600 text-sm">{errors.mobile}</p>}
-      </div>
-
-      {/* Location */}
-      <div className="mb-3">
-        <label className="block mb-1 font-semibold">Location (Village/District)</label>
-        <input
-          type="text"
-          name="location"
-          value={formData.location}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-        />
-        {errors.location && (
-          <p className="text-red-600 text-sm">{errors.location}</p>
-        )}
-      </div>
-
-      {/* Language */}
-      <div className="mb-3">
-        <label className="block mb-1 font-semibold">Preferred Language</label>
-        <select
-          name="language"
-          value={formData.language}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
+        {/* Back Button */}
+        <button
+          onClick={() => window.history.back()}
+          className="mb-4 bg-gray-50 border p-2 rounded"
         >
-          <option value="Tamil">Tamil</option>
-          <option value="English">English</option>
-        </select>
-        {errors.language && (
-          <p className="text-red-600 text-sm">{errors.language}</p>
+          ← Back
+        </button>
+
+        <h2 className="text-center text-green-600 font-semibold mb-6">
+          User Registration
+        </h2>
+
+        {error && (
+          <p className="text-red-600 text-center mb-4 font-semibold">{error}</p>
         )}
-      </div>
 
-      {/* Role */}
-      <div className="mb-3">
-        <label className="block mb-1 font-semibold">Role</label>
-        <select
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-        >
-          <option value="Farmer">Farmer</option>
-          <option value="Buyer">Buyer</option>
-        </select>
-        {errors.role && <p className="text-red-600 text-sm">{errors.role}</p>}
-      </div>
+        <form onSubmit={handleSubmit} className="grid gap-4">
 
-      <button
-        type="submit"
-        className="w-full bg-green-500 text-white p-2 rounded font-semibold hover:bg-green-600 transition"
-      >
-        Register
-      </button>
-    </form>
+          <div>
+            <label className="font-semibold">Name</label>
+            <input
+              type="text"
+              className="w-full border rounded p-2"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold">Mobile Number</label>
+            <input
+              type="text"
+              className="w-full border rounded p-2"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold">Location (Village / District)</label>
+            <input
+              type="text"
+              className="w-full border rounded p-2"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="font-semibold">Preferred Language</label>
+            <select
+              className="w-full border rounded p-2"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+            >
+              <option>English</option>
+              <option>Tamil</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="font-semibold">Role</label>
+            <select
+              className="w-full border rounded p-2"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option>Farmer</option>
+              <option>Buyer</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            className={`w-full bg-green-600 text-white p-3 rounded ${
+              loading ? "opacity-60 cursor-not-allowed" : ""
+            }`}
+            disabled={loading}
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
+        </form>
+      </div>
+    </div>
   );
-};
-
-export default UserRegistrationForm;
+}
