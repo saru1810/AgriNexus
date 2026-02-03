@@ -3,15 +3,15 @@
 ========================= */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0fdf4; /* soft green */
-  color: #1f2937; /* dark text */
+  background-color: #f0fdf4;
+  color: #1f2937;
   margin: 0;
   padding: 0;
 }
 
 h1, h2, h3, h4 {
   font-weight: 600;
-  color: #065f46; /* green-dark */
+  color: #065f46;
 }
 
 p {
@@ -19,15 +19,26 @@ p {
 }
 
 /* =========================
-   CONTAINER STYLES
+   ROOT CONTAINER
 ========================= */
-.max-w-2xl {
-  max-width: 42rem;
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
 }
 
-.max-w-3xl {
-  max-width: 60rem;
+/* =========================
+   LAYOUT & CONTAINERS
+========================= */
+.page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 1.5rem;
 }
+
+.max-w-2xl { max-width: 42rem; }
+.max-w-3xl { max-width: 60rem; }
 
 .shadow {
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -42,8 +53,41 @@ p {
 }
 
 /* =========================
-   FORM STYLES
+   DASHBOARD GRID
 ========================= */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+/* =========================
+   CARDS
+========================= */
+.card {
+  padding: 1.25rem;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  text-align: left;
+}
+
+.price-guidance {
+  border-left: 6px solid #16a34a;
+}
+
+/* =========================
+   FORMS
+========================= */
+.form-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
 input, select, textarea {
   width: 100%;
   padding: 0.5rem 0.75rem;
@@ -53,13 +97,22 @@ input, select, textarea {
   transition: all 0.2s ease-in-out;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   border-color: #16a34a;
   box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
 }
 
+/* =========================
+   BUTTONS
+========================= */
 button {
   cursor: pointer;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
   transition: all 0.2s ease-in-out;
 }
 
@@ -67,63 +120,29 @@ button:hover {
   transform: translateY(-1px);
 }
 
-/* =========================
-   BUTTON COLORS
-========================= */
-.bg-green-600 {
-  background-color: #16a34a;
-}
+/* Button Colors */
+.bg-green-600 { background-color: #16a34a; }
+.bg-green-700 { background-color: #15803d; }
 
-.bg-green-700 {
-  background-color: #15803d;
-}
+.bg-blue-600 { background-color: #2563eb; }
+.bg-blue-700 { background-color: #1d4ed8; }
 
-.bg-blue-600 {
-  background-color: #2563eb;
-}
+.bg-red-600 { background-color: #dc2626; }
+.bg-red-700 { background-color: #b91c1c; }
 
-.bg-blue-700 {
-  background-color: #1d4ed8;
-}
+.bg-purple-600 { background-color: #7c3aed; }
+.bg-purple-700 { background-color: #6d28d9; }
 
-.bg-red-600 {
-  background-color: #dc2626;
-}
-
-.bg-red-700 {
-  background-color: #b91c1c;
-}
-
-.bg-purple-600 {
-  background-color: #7c3aed;
-}
-
-.bg-purple-700 {
-  background-color: #6d28d9;
-}
-
-.text-white {
-  color: #ffffff;
-}
+.text-white { color: #ffffff; }
 
 /* =========================
-   GRID & LAYOUT
+   GRID UTILITIES
 ========================= */
-.grid {
-  display: grid;
-}
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
-.grid-cols-1 {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.md\:grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.gap-4 {
-  gap: 1rem;
-}
+.gap-4 { gap: 1rem; }
 
 .p-2 { padding: 0.5rem; }
 .p-4 { padding: 1rem; }
@@ -138,7 +157,7 @@ button:hover {
 .w-full { width: 100%; }
 
 /* =========================
-   TEXT STYLING
+   TEXT UTILITIES
 ========================= */
 .font-bold { font-weight: 700; }
 .font-semibold { font-weight: 600; }
@@ -151,13 +170,25 @@ button:hover {
 .text-green-600 { color: #16a34a; }
 
 /* =========================
-   OTHER STYLES
+   AGREEMENT & COMPENSATION
 ========================= */
-.disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
+.agreement-text {
+  text-align: left;
+  line-height: 1.8;
 }
 
+.highlight {
+  font-weight: bold;
+  color: #16a34a;
+}
+
+.compensation {
+  text-align: left;
+}
+
+/* =========================
+   MISC
+========================= */
 .border {
   border: 1px solid #d1fae5;
 }
@@ -168,6 +199,11 @@ button:hover {
 
 .bg-gray-50 {
   background-color: #f9fafb;
+}
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .outline-none {
