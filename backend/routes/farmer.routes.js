@@ -1,8 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.json({ message: "Farmer API working" });
-});
+const {
+  registerCrop,
+  getCrops
+} = require("../controllers/farmer.controller");
+
+router.post("/crop", registerCrop);
+router.get("/crops", getCrops);
 
 module.exports = router;
+
