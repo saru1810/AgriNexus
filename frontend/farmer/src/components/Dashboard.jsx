@@ -1,51 +1,82 @@
-import React from 'react';
-import PriceGuidance from './PriceGuidance';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import PriceGuidance from "../src/components/PriceGuidance";
 
-const Dashboard = () => {
-  // Mock data (can later fetch from backend)
-  const totalCrops = 5;
-  const ongoingStatus = 'On Track: 3, Reduced Yield: 1, Failed: 1';
-  const activeAgreements = 2;
+const DashboardPage = () => {
+  const navigate = useNavigate();
 
-  return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Farmer Dashboard</h1>
+  // Mock summary data
+  const totalCrops = 5;
+  const ongoingStatus = "On Track: 3, Reduced Yield: 1, Failed: 1";
+  const activeAgreements = 2;
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded shadow text-center">
-          <h2 className="font-semibold text-lg">Total Crops</h2>
-          <p className="text-2xl font-bold text-green-600">{totalCrops}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow text-center">
-          <h2 className="font-semibold text-lg">Crop Status</h2>
-          <p className="text-gray-700">{ongoingStatus}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow text-center">
-          <h2 className="font-semibold text-lg">Active Agreements</h2>
-          <p className="text-2xl font-bold text-green-600">{activeAgreements}</p>
-        </div>
-      </div>
+  return (
+    <div className="min-h-screen bg-green-50 p-6">
+      {/* Page Title */}
+      <h1 className="text-3xl font-bold text-center text-green-700 mb-6">
+        Farmer Dashboard
+      </h1>
 
-      {/* Action Buttons */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <button className="bg-green-500 text-white p-3 rounded font-semibold hover:bg-green-600 transition">
-          Crop Registration
-        </button>
-        <button className="bg-yellow-500 text-white p-3 rounded font-semibold hover:bg-yellow-600 transition">
-          Crop Status Update
-        </button>
-        <button className="bg-red-500 text-white p-3 rounded font-semibold hover:bg-red-600 transition">
-          Failure Reporting
-        </button>
-      </div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="bg-green-100 p-6 rounded shadow text-center hover:scale-105 transition transform">
+          <h2 className="font-semibold text-lg text-green-800">Total Crops</h2>
+          <p className="text-3xl font-bold text-green-700">{totalCrops}</p>
+        </div>
+        <div className="bg-green-100 p-6 rounded shadow text-center hover:scale-105 transition transform">
+          <h2 className="font-semibold text-lg text-green-800">Crop Status</h2>
+          <p className="text-green-700">{ongoingStatus}</p>
+        </div>
+        <div className="bg-green-100 p-6 rounded shadow text-center hover:scale-105 transition transform">
+          <h2 className="font-semibold text-lg text-green-800">Active Agreements</h2>
+          <p className="text-3xl font-bold text-green-700">{activeAgreements}</p>
+        </div>
+      </div>
 
-      {/* Price Guidance */}
-      <div className="mb-6">
-        <PriceGuidance />
-      </div>
-    </div>
-  );
+      {/* Action Buttons */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <button
+          onClick={() => navigate("/crop-registration")}
+          className="bg-green-600 hover:bg-green-700 text-white p-4 rounded font-semibold shadow transition"
+        >
+          Crop Registration
+        </button>
+
+        <button
+          onClick={() => navigate("/crop-status")}
+          className="bg-green-500 hover:bg-green-600 text-white p-4 rounded font-semibold shadow transition"
+        >
+          Crop Status Update
+        </button>
+
+        <button
+          onClick={() => navigate("/failure-report")}
+          className="bg-green-400 hover:bg-green-500 text-white p-4 rounded font-semibold shadow transition"
+        >
+          Failure Reporting
+        </button>
+
+        <button
+          onClick={() => navigate("/compensation-report")}
+          className="bg-green-600 hover:bg-green-700 text-white p-4 rounded font-semibold shadow transition"
+        >
+          Compensation Report
+        </button>
+
+        <button
+          onClick={() => navigate("/agreement")}
+          className="bg-green-500 hover:bg-green-600 text-white p-4 rounded font-semibold shadow transition"
+        >
+          Farmer-Buyer Agreement
+        </button>
+      </div>
+
+      {/* Price Guidance Section */}
+      <div className="bg-green-100 p-4 rounded shadow">
+        <PriceGuidance />
+      </div>
+    </div>
+  );
 };
 
-export default Dashboard;
+export default DashboardPage;

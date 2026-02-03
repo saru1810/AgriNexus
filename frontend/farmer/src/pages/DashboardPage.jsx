@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import PriceGuidance from "../components/PriceGuidance";
+import PriceGuidance from "../src/components/PriceGuidance";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
