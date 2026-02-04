@@ -20,7 +20,23 @@ const Dashboard = () => {
   const [marketPrices, setMarketPrices] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const basePath = "/farmer"; // All links use this
+
+  // ------------------ Live Market Price (simulated) ------------------
+  const cropList = ["Rice", "Wheat", "Maize", "Millets"];
+  const generatePrices = () => {
+    const prices = cropList.map((crop) => ({
+      crop,
+      price: (Math.random() * (100 - 20) + 20).toFixed(2),
+    }));
+    setMarketPrices(prices);
+  };
+
+  // ------------------ Load Backend Data ------------------
   useEffect(() => {
+    generatePrices(); // initialize live prices
+    const priceInterval = setInterval(generatePrices, 5000); // update every 5 sec
+
     async function loadDashboard() {
       try {
         const [
@@ -29,25 +45,22 @@ const Dashboard = () => {
           agreements,
           compensation,
           demands,
-          prices,
         ] = await Promise.all([
           getCrops(),
           getCropStatuses(),
           getAgreements(),
           getCompensationReport(),
           getBuyerDemands(),
-          getPriceGuidance(),
         ]);
 
         setSummary({
           crops: crops.length,
           statuses: statuses.length,
-          agreements: agreements.filter(a => !a.accepted).length,
+          agreements: agreements.filter((a) => !a.accepted).length,
           compensation: compensation.length,
         });
 
-        setBuyerDemands(demands);
-        setMarketPrices(prices);
+        setBuyerDemands(demands || []);
       } catch (err) {
         console.error("Dashboard load error", err);
       } finally {
@@ -56,6 +69,8 @@ const Dashboard = () => {
     }
 
     loadDashboard();
+
+    return () => clearInterval(priceInterval);
   }, []);
 
   if (loading) return <p>Loading Dashboard...</p>;
@@ -65,7 +80,7 @@ const Dashboard = () => {
       {/* Header */}
       <header className="dashboard-header">
         <h2>Farmer Dashboard</h2>
-        <Link to="/profile" className="profile-link">
+        <Link to={`${basePath}/profile`} className="profile-link">
           My Profile
         </Link>
       </header>
@@ -75,40 +90,44 @@ const Dashboard = () => {
         <div className="card">
           <h3>Crop Registration</h3>
           <p>{summary.crops} crops registered</p>
-          <Link to="/crop-registration">Go</Link>
+          <Link to={`${basePath}/crop-registration`}>Go</Link>
         </div>
 
         <div className="card">
           <h3>Crop Status</h3>
           <p>{summary.statuses} updates</p>
-          <Link to="/crop-status">Go</Link>
+          <Link to={`${basePath}/crop-status`}>Go</Link>
         </div>
 
         <div className="card">
           <h3>Agreements</h3>
           <p>{summary.agreements} pending</p>
-          <Link to="/agreements">View</Link>
+          <Link to={`${basePath}/agreements`}>View</Link>
         </div>
 
         <div className="card">
           <h3>Compensation</h3>
           <p>{summary.compensation} reports</p>
-          <Link to="/compensation">View</Link>
+          <Link to={`${basePath}/compensation`}>View</Link>
         </div>
       </div>
 
       {/* Buyer Demands */}
       <div className="card full-width">
         <h3>Buyer Demands</h3>
-        {buyerDemands.slice(0, 3).map((d, i) => (
-          <p key={i}>
-            {d.crop} • {d.quantity} kg • ₹{d.price}/kg
-          </p>
-        ))}
-        <Link to="/buyer-demands">View All</Link>
+        {buyerDemands.length > 0 ? (
+          buyerDemands.slice(0, 3).map((d, i) => (
+            <p key={i}>
+              {d.crop} • {d.quantity} kg • ₹{d.price}/kg
+            </p>
+          ))
+        ) : (
+          <p>No buyer requests yet.</p>
+        )}
+        <Link to={`${basePath}/buyer-demands`}>View All</Link>
       </div>
 
-      {/* Market Price – Gold-rate style */}
+      {/* Market Prices (live simulated) */}
       <div className="card market-card">
         <h3>Live Market Prices</h3>
         <div className="market-ticker">
@@ -118,7 +137,7 @@ const Dashboard = () => {
             </span>
           ))}
         </div>
-        <small>Last updated: {new Date().toLocaleString()}</small>
+        <small>Last updated: {new Date().toLocaleTimeString()}</small>
       </div>
     </div>
   );

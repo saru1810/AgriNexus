@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./UserRegistrationForm.css";
+import "../../index.css"; // Adjust path if index.css is elsewhere
 
 const UserRegistrationForm = () => {
   const navigate = useNavigate();
@@ -21,40 +21,32 @@ const UserRegistrationForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Phone validation
+    // Simple phone validation
     if (!/^\d{10}$/.test(formData.phone)) {
       setMessage("Phone number must be 10 digits.");
       return;
     }
 
-    // Placeholder for backend call
+    // Log registration (replace with backend API later)
     console.log("Registration Data:", formData);
 
-    
     setMessage("Registration successful!");
-    
+
+    // Redirect to Farmer Dashboard after 1 second
     setTimeout(() => {
-      navigate("/dashboard"); // Redirect to dashboard
-    }, 1200);
+      navigate("/farmer/dashboard");
+    }, 1000);
   };
 
   return (
     <div className="registration-container">
       <h2>👤 User Registration</h2>
-      <p className="subtitle">
-        Please complete your profile before using the platform
-      </p>
+      <p className="subtitle">Please complete your profile before using the platform</p>
 
-      <form onSubmit={handleSubmit} className="registration-form">
+      <form onSubmit={handleSubmit}>
         <label>
           Name *
-          <input
-            type="text"
-            name="name"
-            required
-            value={formData.name}
-            onChange={handleChange}
-          />
+          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
         </label>
 
         <label>
@@ -62,11 +54,10 @@ const UserRegistrationForm = () => {
           <input
             type="tel"
             name="phone"
-            required
-            pattern="[0-9]{10}"
             placeholder="10-digit mobile number"
             value={formData.phone}
             onChange={handleChange}
+            required
           />
         </label>
 
@@ -75,21 +66,16 @@ const UserRegistrationForm = () => {
           <input
             type="text"
             name="location"
-            required
             placeholder="Village / District / State"
             value={formData.location}
             onChange={handleChange}
+            required
           />
         </label>
 
         <label>
           Preferred Language *
-          <select
-            name="language"
-            required
-            value={formData.language}
-            onChange={handleChange}
-          >
+          <select name="language" value={formData.language} onChange={handleChange} required>
             <option value="ENG">English</option>
             <option value="TAMIL">Tamil</option>
           </select>
@@ -97,12 +83,7 @@ const UserRegistrationForm = () => {
 
         <label>
           Role *
-          <select
-            name="role"
-            required
-            value={formData.role}
-            onChange={handleChange}
-          >
+          <select name="role" value={formData.role} onChange={handleChange} required>
             <option value="Farmer">Farmer</option>
             <option value="Buyer">Buyer</option>
           </select>

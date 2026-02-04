@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import { registerCrop } from "../api/farmerApi";
 
 const CropRegistrationForm = ({ farmerId }) => {
-  const [crop, setCrop] = useState("Rice");
+  const [crop, setCrop] = useState("");
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
+  const [regDate, setRegDate] = useState(new Date().toISOString().split("T")[0]); // ✅ Registration Date
   const [harvestDate, setHarvestDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -14,7 +15,7 @@ const CropRegistrationForm = ({ farmerId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!crop || !quantity || !price || !harvestDate) {
+    if (!crop || !quantity || !price || !regDate || !harvestDate) {
       setMessage("Please fill in all required fields.");
       return;
     }
@@ -22,20 +23,18 @@ const CropRegistrationForm = ({ farmerId }) => {
     setLoading(true);
     setMessage("");
     try {
-      const payload = { farmerId, crop, quantity, price, harvestDate };
+      const payload = { farmerId, crop, quantity, price, regDate, harvestDate }; // ✅ include regDate
       await registerCrop(payload);
       setMessage("Crop registered successfully!");
       // clear form
+      setCrop("");
       setQuantity("");
       setPrice("");
+      setRegDate(new Date().toISOString().split("T")[0]); // reset to today
       setHarvestDate("");
-      setCrop("Rice");
     } catch (err) {
       console.error(err);
       setMessage("Failed to register crop. Please try again.");
-      setTimeout(() => {
-  navigate("/dashboard"); // Redirect to dashboard
-}, 1200);
     } finally {
       setLoading(false);
     }
@@ -72,6 +71,16 @@ const CropRegistrationForm = ({ farmerId }) => {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             min="1"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Registration Date:</label>
+          <input
+            type="date"
+            value={regDate}
+            onChange={(e) => setRegDate(e.target.value)}
             required
           />
         </div>
