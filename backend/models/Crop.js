@@ -1,12 +1,18 @@
 // backend/models/Crop.js
+// backend/models/Crop.js
+const mongoose = require("mongoose");
 
-class Crop {
-  constructor(farmerName, crop, quantity, status = "Normal") {
-    this.farmerName = farmerName;
-    this.crop = crop;
-    this.quantity = quantity;
-    this.status = status;
-  }
-}
+const cropSchema = new mongoose.Schema(
+  {
+    farmerName: String,
+    crop: String,
+    quantity: Number,
+    price: Number,
+    location: String,
+  },
+  { timestamps: true }
+);
 
-module.exports = Crop;
+module.exports = mongoose.model("Crop", cropSchema);
+
+

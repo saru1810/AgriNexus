@@ -1,23 +1,16 @@
-// backend/controllers/farmer.controller.js
+const Crop = require("../models/Crop");
 
-const crops = [];
-
-exports.registerCrop = (req, res) => {
-  const { farmerName, crop, quantity, location } = req.body;
-
-  crops.push({
-    farmerName,
-    crop,
-    quantity,
-    location,
-    status: "Normal"
-  });
-
-  res.json({
-    message: "Crop registered successfully"
-  });
+exports.registerCrop = async (req, res) => {
+  try {
+    const crop = await Crop.create(req.body);
+    res.status(201).json(crop);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to register crop" });
+  }
 };
 
-exports.getCrops = (req, res) => {
+exports.getCrops = async (req, res) => {
+  const crops = await Crop.find();
   res.json(crops);
 };
+
